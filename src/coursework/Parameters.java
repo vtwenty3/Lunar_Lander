@@ -17,15 +17,23 @@ public class Parameters {
 	private static int numGenes = calculateNumGenes();
 	public static double minGene = -3; // specifies minimum and maximum weight values
 	public static double maxGene = +3;
-
 	public static int popSize = 40;
 	public static int maxEvaluations = 3000;
-
 	// Parameters for mutation
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value
 	public static double mutateRate = 0.01; // 0.01 mutation rate for mutation operator
 	public static double mutateChange = 0.1; // delta change for mutation operator
+	//New parameters
+	public static final int tournamentSize = 5; // Tournament size
+//	public static final double elitePercentage = 0.1; // Elite percentage 0.3 == 30%
+	public static final String crossoverMethod = "onePoint"; // Crossover method: "onePoint" or "twoPoint"
+	public static double preserveElitePercentage  = 0.10; // delta change for mutation operator
+	public static  String activationFunction = "SELU"; // Crossover method: "SELU" or "TANH"
+
+
+
+
 
 	// Random number generator used throughout the application
 	public static long seed = System.currentTimeMillis();
