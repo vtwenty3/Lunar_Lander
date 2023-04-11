@@ -1,9 +1,9 @@
 package coursework;
+import org.apache.commons.math3.random.RandomDataGenerator;
+import org.apache.commons.math3.random.HaltonSequenceGenerator;
+import org.apache.commons.math3.random.SobolSequenceGenerator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import model.Fitness;
@@ -26,7 +26,15 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	@Override
 	public void run() {		
 		//Initialise a population of Individuals with random weights
-		population = initialise();
+
+		if (Parameters.initialistionMethod.equalsIgnoreCase("sobol")) {
+			population = initialiseSobol();
+		}else if (Parameters.initialistionMethod.equalsIgnoreCase("lhs")){
+		population = initialiseLHS();
+		}
+		else{ //random
+			population = initialiseRandom();
+		}
 
 		//Record a copy of the best Individual in the population
 		best = getBest();
@@ -49,6 +57,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			Individual parent1 = select(); 
 			Individual parent2 = select();
 
+
 			// Generate a child by crossover. Not Implemented			
 			ArrayList<Individual> children = reproduce(parent1, parent2);			
 			
@@ -63,9 +72,19 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 
 			// check to see if the best has improved
 			best = getBest();
-			
+
+			Individual candidate = mutateBest(best);
+			if(candidate.fitness < best.fitness) {
+				best = candidate;
+				updateBestInPopulation(candidate);
+			}
+
+
+
 			// Implemented in NN class. 
 			outputStats();
+			//double diversity = calculatePopulationDiversity();
+			//System.out.println("Population Diversity: " + diversity);
 			
 			//Increment number of completed generations			
 		}
@@ -84,6 +103,8 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		}
 	}
 
+
+
 	/**
 	 * Returns a copy of the best individual in the population
 	 * 
@@ -100,11 +121,43 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		return best;
 	}
 
+	private void updateBestInPopulation(Individual candidate) {
+		int bestIndex = -1;
+		double bestFitness = Double.MAX_VALUE;
+
+		for (int i = 0; i < population.size(); i++) {
+			if (population.get(i).fitness < bestFitness) {
+				bestFitness = population.get(i).fitness;
+				bestIndex = i;
+			}
+		}
+
+		if (bestIndex >= 0) {
+			population.set(bestIndex, candidate);
+		}
+	}
+
+
+	private Individual mutateBest(Individual best) {
+		Individual candidate = best.copy();
+		double currentMutationRate = adaptiveMutationRate();
+		for (int i = 0; i < candidate.chromosome.length; i++) {
+			if (Parameters.random.nextDouble() < currentMutationRate) {
+				if (Parameters.random.nextBoolean()) {
+					candidate.chromosome[i] += (Parameters.mutateChangeBest);
+				} else {
+					candidate.chromosome[i] -= (Parameters.mutateChangeBest);
+				}
+			}
+		}
+		Fitness.evaluate(candidate, this);
+		return candidate;
+	}
 	/**
 	 * Generates a randomly initialised population
 	 * 
 	 */
-	private ArrayList<Individual> initialise() {
+	private ArrayList<Individual> initialiseRandom() {
 		population = new ArrayList<>();
 		for (int i = 0; i < Parameters.popSize; ++i) {
 			//chromosome weights are initialised randomly in the constructor
@@ -115,22 +168,62 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		return population;
 	}
 
+	private ArrayList<Individual> initialiseLHS() {
+		population = new ArrayList<>();
+		int numIntervals = Parameters.popSize;
+		double intervalSize = 1.0 / numIntervals;
+		double minGeneValue = Parameters.minGene; // Set the minimum gene value for your problem
+		double maxGeneValue = Parameters.maxGene;// Set the maximum gene value for your problem
+		double geneRange = maxGeneValue - minGeneValue;
+
+		double[][] lhsMatrix = new double[Parameters.getNumGenes()][Parameters.popSize];
+
+		// Generate LHS matrix
+		for (int i = 0; i < Parameters.getNumGenes(); i++) {
+			for (int j = 0; j < Parameters.popSize; j++) {
+				double randomValue = Math.random() * intervalSize;
+				lhsMatrix[i][j] = minGeneValue + (j * intervalSize) + randomValue;
+			}
+			// Shuffle each row of the LHS matrix
+			Collections.shuffle(Arrays.asList(lhsMatrix[i]));
+		}
+
+		// Create the initial population using the LHS matrix
+		for (int i = 0; i < Parameters.popSize; i++) {
+			Individual individual = new Individual();
+			for (int j = 0; j < Parameters.getNumGenes(); j++) {
+				individual.chromosome[j] = lhsMatrix[j][i];
+			}
+			population.add(individual);
+		}
+
+		evaluateIndividuals(population);
+		return population;
+	}
+
+	private ArrayList<Individual> initialiseSobol() {
+		population = new ArrayList<>();
+		SobolSequenceGenerator sobol = new SobolSequenceGenerator(Parameters.getNumGenes());
+		double geneRange = Parameters.maxGene - Parameters.minGene;
+
+		for (int i = 0; i < Parameters.popSize; ++i) {
+			Individual individual = new Individual();
+			double[] point = sobol.nextVector();
+			for (int j = 0; j < Parameters.getNumGenes(); ++j) {
+				individual.chromosome[j] = Parameters.minGene + (point[j] * geneRange);
+			}
+			population.add(individual);
+		}
+		evaluateIndividuals(population);
+		return population;
+	}
+
+
+
+
 	private Individual select() {
 		// Use Parameters.tournamentSize instead of hardcoding the value
 		Individual best = null;
-
-//		// Calculate the elite threshold using Parameters.elitePercentage
-//		int eliteThreshold = (int) (Parameters.elitePercentage * Parameters.popSize);
-//		List<Individual> eliteIndividuals = population.stream()
-//				.sorted(Comparator.comparingDouble(individual -> -individual.fitness))
-//				.limit(eliteThreshold)
-//				.collect(Collectors.toList());
-//
-//		// If there are elite individuals, select a random elite individual and return its copy
-//		if (!eliteIndividuals.isEmpty()) {
-//			return eliteIndividuals.get(Parameters.random.nextInt(eliteIndividuals.size())).copy();
-//		}
-
 		// perform tournament selection
 		for (int i = 0; i < Parameters.tournamentSize; i++) {
 			Individual individual = population.get(Parameters.random.nextInt(Parameters.popSize));
@@ -199,20 +292,66 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 	 * 
 	 * 
 	 */
-	private void mutate(ArrayList<Individual> individuals) {		
 
-		for(Individual individual : individuals) {
+	private double calculatePopulationDiversity() {
+		// Calculate the average fitness of the population
+		double averageFitness = population.stream().mapToDouble(individual -> individual.fitness).average().orElse(0.0);
+		double diversity = 0.0;
+		// Calculate the diversity of the population
+		for (Individual individual : population) {
+			double distance = 0.0;
 			for (int i = 0; i < individual.chromosome.length; i++) {
-				if (Parameters.random.nextDouble() < Parameters.mutateRate) {
+				distance += Math.abs(individual.chromosome[i] - averageFitness);
+			}
+			diversity += distance;
+		}
+
+		// Return the average diversity of the population
+		return diversity / population.size();
+	}
+
+
+	private double adaptiveMutationRate() {
+		double diversity = calculatePopulationDiversity();
+		// Calculate the adaptive mutation rate based on the diversity
+		return Parameters.minMutationRate + (Parameters.maxMutationRate - Parameters.minMutationRate) * (diversity / Parameters.maxDiversity);
+	}
+
+	private void mutate(ArrayList<Individual> individuals) {
+		// Calculate the adaptive mutation rate
+		double currentMutationRate = adaptiveMutationRate();
+
+		// Mutate all with a chance of currentMutationRate (%) usually between 0.1% to 30%
+		for (Individual individual : individuals) {
+			for (int i = 0; i < individual.chromosome.length; i++) {
+				if (Parameters.random.nextDouble() < currentMutationRate) {
 					if (Parameters.random.nextBoolean()) {
-						individual.chromosome[i] += (Parameters.mutateChange);
+						individual.chromosome[i] += (Parameters.mutateChangePopulation);
 					} else {
-						individual.chromosome[i] -= (Parameters.mutateChange);
+						individual.chromosome[i] -= (Parameters.mutateChangePopulation);
 					}
 				}
 			}
 		}
 	}
+
+	//old mutation
+//	private void mutate(ArrayList<Individual> individuals) {
+//
+//		for(Individual individual : individuals) {
+//			for (int i = 0; i < individual.chromosome.length; i++) {
+//				if (Parameters.random.nextDouble() < Parameters.mutateRate) {
+//					if (Parameters.random.nextBoolean()) {
+//						individual.chromosome[i] += (Parameters.mutateChange);
+//					} else {
+//						individual.chromosome[i] -= (Parameters.mutateChange);
+//					}
+//				}
+//			}
+//		}
+//	}
+
+
 
 	/**
 	 * 
@@ -251,17 +390,11 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			}
 		}
 		return idx;
-	}	
+	}
 
-//	@Override
-//	public double activationFunction(double x) {
-//		if (x < -20.0) {
-//			return -1.0;
-//		} else if (x > 20.0) {
-//			return 1.0;
-//		}
-//		return Math.tanh(x);
-//	}
+
+
+
 
 //SELU
 public double activationFunction(double x) {
