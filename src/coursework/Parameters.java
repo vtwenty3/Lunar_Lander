@@ -15,7 +15,7 @@ public class Parameters {
 	 */
 	public static int numHidden = 20;
 	private static int numGenes = calculateNumGenes();
-	public static double minGene = -0.05; // specifies minimum and maximum weight values
+	public static double minGene = -0.05;// specifies minimum and maximum weight values
 	public static double maxGene = +0.05;
 	public static int maxEvaluations = 5000;
 	public static int popSize = 50;
@@ -23,18 +23,18 @@ public class Parameters {
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value
 	//New parameters
-	public static final int tournamentSize = 7; // Tournament size
+	public static  int tournamentSize = 7; // Tournament size
 	public static final String crossoverMethod = "twoPoint"; // Crossover method: "onePoint" or "twoPoint"
 	public static double preserveElitePercentage  = 0.40; // delta change for mutation operator
 	public static  String activationFunction = "TANH"; // Crossover method: "SELU" or "TANH"
 	//Used in adaptive mutation
-	public static  String initialistionMethod = "random"; // Crossover method: "random" or "sobol" or "lhs"
+	public static  String initialistionMethod = "lhs"; // Crossover method: "random" or "sobol" or "lhs"
 	public static double mutateChangeBest = 0.5; // delta change for mutation operator
 	//Change the following to influence the adaptive mutation rate
 	public static double mutateChangePopulation = 0.4; // delta change for mutation operator
 	public static double minMutationRate = 0.001; // delta change for mutation operator
 	public static double maxMutationRate = 0.3; // delta change for mutation operator
-	public static double maxDiversity = 300;
+	public static int maxDiversity = 300;
 	//Used in normal mutation
 	public static double mutateRate = 0.01; // 0.01 mutation rate for mutation operator
 	public static double mutateChange = 0.1; // delta change for mutation operator

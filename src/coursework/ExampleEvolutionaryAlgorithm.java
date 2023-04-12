@@ -369,7 +369,11 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		// Replace the non-elite individuals with the new children
 		for (int i = 0; i < individuals.size(); i++) {
 			int replaceIndex = eliteCount + i;
-			population.set(replaceIndex, individuals.get(i));
+			if (replaceIndex < population.size()) { // Ensure replaceIndex is within bounds
+				population.set(replaceIndex, individuals.get(i));
+			} else {
+				break; // Exit the loop if replaceIndex is out of bounds
+			}
 		}
 	}
 	/**
