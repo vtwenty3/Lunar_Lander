@@ -1,0 +1,5 @@
+Iteration,MinGene,MaxGene,PopSize,TournamentSize,PreserveElitePercentage,MutateChangePopulation,MaxMutationRate,AverageFitness
+1,-0.1000,0.1000,900,240,0.6500,0.3000,0.2500,0.0724
+2,-0.1000,0.1000,900,280,0.6500,0.3000,0.2500,0.0424
+3,-0.1000,0.1000,900,320,0.6500,0.3000,0.2500,0.0912
+4,-0.1000,0.1000,900,340,0.6500,0.3000,0.2500,0.0710

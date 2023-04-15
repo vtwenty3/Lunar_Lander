@@ -30,35 +30,43 @@ public class StartNoGui {
 		if (true) {
 			//Parameters.popSize = popSize;
 			long startTime = System.currentTimeMillis();
-			double totalFitness = 0.0;
+			double totalFitnessTraining = 0.0;
+			double totalFitnessTest = 0.0;
 			int numThreads = 10;
 			ExecutorService executor = Executors.newFixedThreadPool(numThreads);
-			List<Future<Double>> futures = new ArrayList<>();
+			List<Future<Double[]>> futures = new ArrayList<>();
 			for (int i = 0; i < numThreads; i++) {
-				Future<Double> future = executor.submit(() -> {
+				Future<Double[]> future = executor.submit(() -> {
 					Parameters.setDataSet(DataSet.Training);
 					// Train the Neural Network using the Evolutionary Algorithm
 					NeuralNetwork nn = new ExampleEvolutionaryAlgorithm();
 					nn.run();
+					double fitnessTraining = Fitness.evaluate(nn);
 					// Test the trained network on the test data set
 					Parameters.setDataSet(DataSet.Test);
-					return Fitness.evaluate(nn);
+					double fitnessTest = Fitness.evaluate(nn);
+					return new Double[] {fitnessTraining, fitnessTest};
 				});
 				futures.add(future);
 			}
 			executor.shutdown();
-			for (Future<Double> future : futures) {
+			for (Future<Double[]> future : futures) {
 				try {
-					totalFitness += future.get();
+					Double[] fitness = future.get();
+					totalFitnessTraining += fitness[0];
+					totalFitnessTest += fitness[1];
 				} catch (InterruptedException | ExecutionException e) {
 					e.printStackTrace();
 				}
 			}
-			double averageFitness = totalFitness / numThreads;
-			System.out.println("Average Fitness on Test: " + averageFitness);
+			double averageFitnessTraining = totalFitnessTraining / numThreads;
+			double averageFitnessTest = totalFitnessTest / numThreads;
+			System.out.println("Average Fitness on Training: " + averageFitnessTraining);
+			System.out.println("Average Fitness on Test: " + averageFitnessTest);
 			long endTime = System.currentTimeMillis();
 			long duration = (endTime - startTime) / 1000;
 			System.out.println("Time taken (in seconds): " + duration);
+
 		} else {
 
 			List<Integer> popSizes = Arrays.asList(50, 100, 200);

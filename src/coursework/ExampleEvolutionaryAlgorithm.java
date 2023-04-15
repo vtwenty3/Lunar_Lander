@@ -1,7 +1,5 @@
 package coursework;
-import org.apache.commons.math3.random.RandomDataGenerator;
-import org.apache.commons.math3.random.HaltonSequenceGenerator;
-import org.apache.commons.math3.random.SobolSequenceGenerator;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -28,7 +26,7 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		//Initialise a population of Individuals with random weights
 
 		if (Parameters.initialistionMethod.equalsIgnoreCase("sobol")) {
-			population = initialiseSobol();
+//			population = initialiseSobol();
 		}else if (Parameters.initialistionMethod.equalsIgnoreCase("lhs")){
 		population = initialiseLHS();
 		}
@@ -79,6 +77,15 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 				updateBestInPopulation(candidate);
 			}
 
+
+//
+//			for(int i = 0; i < 5; i++) {
+//				Individual candidate = mutateBest(best);
+//				if(candidate.fitness < best.fitness) {
+//					best = candidate;
+//					updateBestInPopulation(candidate);
+//				}
+//			}
 
 
 			// Implemented in NN class. 
@@ -200,23 +207,23 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		evaluateIndividuals(population);
 		return population;
 	}
-
-	private ArrayList<Individual> initialiseSobol() {
-		population = new ArrayList<>();
-		SobolSequenceGenerator sobol = new SobolSequenceGenerator(Parameters.getNumGenes());
-		double geneRange = Parameters.maxGene - Parameters.minGene;
-
-		for (int i = 0; i < Parameters.popSize; ++i) {
-			Individual individual = new Individual();
-			double[] point = sobol.nextVector();
-			for (int j = 0; j < Parameters.getNumGenes(); ++j) {
-				individual.chromosome[j] = Parameters.minGene + (point[j] * geneRange);
-			}
-			population.add(individual);
-		}
-		evaluateIndividuals(population);
-		return population;
-	}
+//
+//	private ArrayList<Individual> initialiseSobol() {
+//		population = new ArrayList<>();
+//		SobolSequenceGenerator sobol = new SobolSequenceGenerator(Parameters.getNumGenes());
+//		double geneRange = Parameters.maxGene - Parameters.minGene;
+//
+//		for (int i = 0; i < Parameters.popSize; ++i) {
+//			Individual individual = new Individual();
+//			double[] point = sobol.nextVector();
+//			for (int j = 0; j < Parameters.getNumGenes(); ++j) {
+//				individual.chromosome[j] = Parameters.minGene + (point[j] * geneRange);
+//			}
+//			population.add(individual);
+//		}
+//		evaluateIndividuals(population);
+//		return population;
+//	}
 
 
 
@@ -321,7 +328,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 		// Calculate the adaptive mutation rate
 		double currentMutationRate = adaptiveMutationRate();
 
-		// Mutate all with a chance of currentMutationRate (%) usually between 0.1% to 30%
 		for (Individual individual : individuals) {
 			for (int i = 0; i < individual.chromosome.length; i++) {
 				if (Parameters.random.nextDouble() < currentMutationRate) {
@@ -334,6 +340,8 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			}
 		}
 	}
+
+
 
 	//old mutation
 //	private void mutate(ArrayList<Individual> individuals) {

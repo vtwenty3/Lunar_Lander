@@ -1,0 +1,40 @@
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+setwd("C:/Users/Vincent/Desktop/SET10107Coursework2023/dataMining/2_random_250")
+# Read dataset
+dataset <- read.csv("random_search_250.csv")
+
+# Filter out outliers, if necessary (e.g., very high fitness values)
+# dataset <- dataset %>% filter(averageFitness < threshold)
+
+# Create scatter plots
+# AverageFitness vs. PopSize
+pop_size_plot <- ggplot(dataset, aes(x = PopSize, y = averageFitness, color = InitialisationMethod)) +
+  geom_point(aes(shape = activationFunction), alpha = 0.8, size = 3) +
+  theme_minimal() +
+  labs(title = "Average Fitness vs. Population Size",
+       x = "Population Size",
+       y = "Average Fitness")
+print(pop_size_plot)
+
+
+# AverageFitness vs. MaxMutationRate
+mutation_rate_plot <- ggplot(dataset, aes(x = MaxMutationRate, y = averageFitness, color = InitialisationMethod)) +
+  geom_point(aes(shape = activationFunction), alpha = 0.8, size = 3) +
+  theme_minimal() +
+  labs(title = "Average Fitness vs. Max Mutation Rate",
+       x = "Max Mutation Rate",
+       y = "Average Fitness")
+print(mutation_rate_plot)
+
+
+# AverageFitness vs. maxDiversity
+max_diversity_plot <- ggplot(dataset, aes(x = maxDiversity, y = averageFitness, color = InitialisationMethod)) +
+  geom_point(aes(shape = activationFunction), alpha = 0.8, size = 3) +
+  theme_minimal() +
+  labs(title = "Average Fitness vs. Max Diversity",
+       x = "Max Diversity",
+       y = "Average Fitness")
+print(max_diversity_plot)
+

@@ -1,0 +1,38 @@
+# Load required packages
+library(reshape2)
+library(ggplot2)
+
+# Read dataset
+dataset <- read.csv("random_finaleee.csv")
+
+# Select relevant columns
+relevant_columns <- c("MinGene", "MaxGene", "MutateChangePopulation", "MaxMutationRate")
+
+# Melt the dataset for ggplot2
+melted_dataset <- melt(dataset, id.vars = c("Iteration", "AverageFitness", "MaxGene", "MutateChangePopulation"), measure.vars = relevant_columns)
+
+# Define custom theme
+my_theme <- theme_bw() + 
+  theme(text = element_text(size = 14),
+        panel.grid.major = element_line(size = 0.5, linetype = "dashed", color = "gray60"),
+        panel.grid.minor = element_line(size = 0.25, linetype = "dashed", color = "gray60"),
+        legend.position = "bottom",
+        legend.key.width = unit(3, "cm"))
+
+# Create a list of plots
+plots <- lapply(relevant_columns, function(variable) {
+  plot_dataset <- melted_dataset[melted_dataset$variable == variable & melted_dataset$AverageFitness < 0.1, ]
+  plot <- ggplot(plot_dataset, aes(x = AverageFitness, y = value, color = MaxGene)) +
+    geom_point(alpha = 1, size = 3) +
+    geom_smooth(method = "loess", se = TRUE, linetype = "solid", level = 0.75, size = 1, alpha = 0.20) +
+    my_theme +
+    scale_color_gradient(low = "#f7c602", high = "black") +
+    labs(title = paste("Average Fitness vs.", variable),
+         x = "Average Fitness", y = "Value", color = "MaxGene")
+  return(plot)
+})
+
+# Display plots one by one
+for (plot in plots) {
+  print(plot)
+}

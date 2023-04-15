@@ -35,40 +35,29 @@ public class StartNoGuiRandom {
 
     public static void main(String[] args) {
         Random rand = new Random();
-        int iterations = 20; // 16min == 10 runs for  5000 evaluations
-        String resultsFilename = "random_search_results2test234.csv";
+        int iterations = 150;
+        String resultsFilename = "random_finaleee.csv";
 
         // Prepare the results file
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(resultsFilename))) {
             // Write the header
-            writer.write("Iteration,MinGene,MaxGene,PopSize,TournamentSize,PreserveElitePercentage,InitialisationMethod,MutateChangePopulation,MaxMutationRate,AverageFitness\n");
+            writer.write("Iteration,MinGene,MaxGene,MutateChangePopulation,MaxMutationRate,AverageFitness\n");
 
             for (int iter = 0; iter < iterations; iter++) {
-                Parameters.maxGene = rand.nextDouble() * (4 - 0.1) + 0.1;
+                Parameters.maxGene = rand.nextDouble() * (0.05 - 0.01) + 0.01;
                 Parameters.minGene = -Parameters.maxGene;
-                Parameters.popSize = rand.nextInt(800) + 80;
-                Parameters.tournamentSize = rand.nextInt(Parameters.popSize - 10) + 3;
-                Parameters.preserveElitePercentage = rand.nextDouble() * (0.7 - 0.05) + 0.05;
-                Parameters.initialistionMethod = rand.nextInt(2) == 0 ? "sobol" : "lhs";
-                Parameters.mutateChangePopulation = rand.nextDouble() * (0.9 - 0.1) + 0.1;
-                Parameters.maxMutationRate = rand.nextDouble() * (0.7 - 0.2) + 0.2;
-                Parameters.activationFunction = rand.nextInt(2) == 0 ? "SELU" : "TANH";
-                Parameters.maxDiversity = rand.nextInt(501) + 100;
+
+                Parameters.mutateChangePopulation = rand.nextDouble() * (0.52 - 0.37) + 0.37;
+                Parameters.maxMutationRate = rand.nextDouble() * (0.3 - 0.2) + 0.2;
 
                 double averageFitness = executeMainCode();
 
-                writer.write(String.format("%d,%.4f,%.4f,%d,%d,%.4f,%s,%.4f,%.4f,%s,%d,%.4f%n",
+                writer.write(String.format("%d,%.4f,%.4f,%.4f,%.4f,%.4f%n",
                         iter + 1,
                         Parameters.minGene,
                         Parameters.maxGene,
-                        Parameters.popSize,
-                        Parameters.tournamentSize,
-                        Parameters.preserveElitePercentage,
-                        Parameters.initialistionMethod,
                         Parameters.mutateChangePopulation,
                         Parameters.maxMutationRate,
-                        Parameters.activationFunction,
-                        Parameters.maxDiversity,
                         averageFitness));
             }
         } catch (IOException e) {
@@ -113,9 +102,5 @@ public class StartNoGuiRandom {
         // Calculate average fitness
         return averageFitness;
     }
-
-
-
-
 }
 
