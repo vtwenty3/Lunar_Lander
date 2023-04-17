@@ -109,9 +109,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			individual.fitness = Fitness.evaluate(individual, this);
 		}
 	}
-
-
-
 	/**
 	 * Returns a copy of the best individual in the population
 	 * 
@@ -143,7 +140,6 @@ public class ExampleEvolutionaryAlgorithm extends NeuralNetwork {
 			population.set(bestIndex, candidate);
 		}
 	}
-
 
 	private Individual mutateBest(Individual best) {
 		Individual candidate = best.copy();

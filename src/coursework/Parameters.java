@@ -17,7 +17,7 @@ public class Parameters {
 	private static int numGenes = calculateNumGenes();
 	public static double minGene = -0.035;// specifies minimum and maximum weight values
 	public static double maxGene = +0.035;
-	public static int maxEvaluations = 20000;
+	public static int maxEvaluations = 5000;
 	// Parameters for mutation
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value
@@ -26,17 +26,18 @@ public class Parameters {
 	public static  int tournamentSize = 380; // Tournament size
 	public static final String crossoverMethod = "twoPoint"; // Crossover method: "onePoint" or "twoPoint"
 	public static double preserveElitePercentage  = 0.7; // delta change for mutation operator
-
 	public static  String activationFunction = "SELU"; // Crossover method: "SELU" or "TANH"
-	//Used in adaptive mutation
-	public static  String initialistionMethod = "lhs"; // Crossover method: "random" or "sobol" or "lhs"
+
+	//For sobol need to enable math3, check EvolutionaryAlgorithm.java
+	public static  String initialistionMethod = "lhs"; // init, typo but.. Choices: "random" or "sobol" or "lhs"
+
 	public static double mutateChangeBest = 0.55; // delta change for mutation operator
 	//Change the following to influence the adaptive mutation rate
 	public static double mutateChangePopulation = 0.42; // delta change for mutation operator
 	public static double minMutationRate = 0.001; // delta change for mutation operator
 	public static double maxMutationRate = 0.23; // delta change for mutation operator
 	public static int maxDiversity = 300;
-	//Used in normal mutation
+	//Used in normal mutation. Does not do anyting in current implementation
 	public static double mutateRate = 0.01; // 0.01 mutation rate for mutation operator
 	public static double mutateChange = 0.1; // delta change for mutation operator
 
