@@ -17,7 +17,7 @@ public class Parameters {
 	private static int numGenes = calculateNumGenes();
 	public static double minGene = -0.035;// specifies minimum and maximum weight values
 	public static double maxGene = +0.035;
-	public static int maxEvaluations = 5000;
+	public static int maxEvaluations = 20000;
 	// Parameters for mutation
 	// Rate = probability of changing a gene
 	// Change = the maximum +/- adjustment to the gene value

@@ -34,7 +34,7 @@ public class StartNoGui {
 			long startTime = System.currentTimeMillis();
 			double totalFitnessTraining = 0.0;
 			double totalFitnessTest = 0.0;
-			int numThreads = 4;
+			int numThreads = 12;
 			int number = 0;
 
 // Train numThreads neural networks using ExecutorService
