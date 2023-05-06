@@ -55,10 +55,9 @@ To improve efficiency and reduce computing time, multithreading has been impleme
 After running the search, the results from the generated `.csv` file will be plotted using R-Studio. This will help find relationships and analyze the reasons and parameters responsible for good fitness results. The goal is to find parameter ranges that lead to satisfying fitness results and then evaluate the combinations using grid search.
 
 
-# Hyperparameter tuning and data analysis
 
-## Experiment and Analysis
-### 2.1 1st Random Search
+# Experiments and Analysis
+## 1st Random Search
 - Iterations: 75
 
 #### Fixed parameters:
@@ -80,9 +79,13 @@ After running the search, the results from the generated `.csv` file will be plo
   - mutateChangePopulation: (0.1 – 0.9)
   - maxMutationRate: (0.2 – 0.7)
   - activationFunction: (SELU, TANH)
+![Image 1](1.png)
 
 The results were plotted to visualize the findings. However, due to the small size of the dataset (75 runs), it is not possible to make any drastic conclusions. The aim of this experiment is not to find the optimal solution but to identify which parameters need to be refined to make the next search more efficient.
 
+
+![Image 2](2.png)
+![Image 3](3.png)
 - The largest search space is observed in LHS activation.
 - A clear correlation exists between MaxGene and Average fitness in LHS activation, where a lower MaxGene results in lower Average fitness. Optimal performance is observed when MaxGene is in the range of 0 - 2.5.
 - Sobol activation function has minimal correlation with MaxGene and performs similar across the range of MaxGene of 0 - 4.
@@ -94,7 +97,10 @@ The results were plotted to visualize the findings. However, due to the small si
 - No good results below 0.25 mutate change.
 
 
-## 2.2 2nd Random Search
+
+![Image 4](4.png)
+
+## 2nd Random Search
 **Changes are highlighted in bold** 
 
 ### Fixed parameters: 
@@ -140,7 +146,7 @@ TANH ranges:
 Grid search would be around 2000 combinations, which would take approximately 52 hours to complete. Another random search with tighter ranges would be performed instead.
 
 
-## 2.3 3rd Random Search 
+## 3rd Random Search 
 Iterations - 443
 
 Changes are highlighted in bold
@@ -170,9 +176,13 @@ The following analysis highlights a clear distinction between the SELU and TANH 
 
 Utilizing the data obtained from random searches, the parameter ranges were narrowed down for a grid search strategy. Although numerous combinations are possible, the best 5 populations were given a stronger emphasis. 
 
+![Image 5](5.png)
+
+
+
 Ideally, more random searches should be conducted focusing solely on the SELU activation, which would facilitate the identification of better ranges, particularly in terms of population size and tournament ratio. 
 
-## 2.4 1st Grid Search 
+##  1st Grid Search 
 
 Iterations – 96
 
@@ -195,6 +205,10 @@ Parameters for combinations:
 
 Plotting the data did not yield any significant insights, however, it was easy to identify common combinations in the best results by analyzing the data in OpenRefine.
 
+
+![Image 6](6.png)
+
+
 To my disappointment, the best result appeared to be more of an exception rather than a predictable model. After manual testing, I found that the main source of unpredictability was the high MaxMin gene parameter. This was confirmed through manual testing with the best operators identified from the grid search. It appears that the higher the Min and Max gene, the more unreliable the model becomes, producing random results each time. From my limited manual testing, it appeared that the model was more predictable with a MinMax gene of 0.1, giving results within a reasonable range (average of 10 runs), compared to 0.7, where the average was always quite different. Another important thing to note is that randomness can be due to the nature of "lhs" and its results outlined in the previous runs. Despite these findings, the grid search helped identify "optimal" or "near-optimal" parameters that produced good results:
 - TournamentSize ~ 380
 - Perserve ElitePercantage ~ 0.65
@@ -204,7 +218,7 @@ To my disappointment, the best result appeared to be more of an exception rather
 - minMax Gene range ~ (0.1 – 0.5)
 
 
-## 2.5 4th random search 
+## 4th random search 
 Iterations – 54 
 -	maxMutationRate (0.12 - 0.25) 
 -	mutateChangePopulation (0.3 - 0.5) 
@@ -214,6 +228,14 @@ Iterations – 54
 -	minGene  -maxGene 
 -	mutateChangeBest (0.4, 0.5, 0.6) 
 
+With the values identified in the grid search, a quick random search made sense, as now we have a lot of fixed values, and its much easier to identify the optimal values for the “unknowns”. A quick and quite limited run was performed, but despite this, it was helpful as it showed that lower Min/Max Gene generally produce better results, also, it helped “solidify” the values for the last run. 
+
+This helped fix 3 parameters - TournamentSize, PerserveElite and mutateChangeBest and identify ranges for the final run. 
+
+![Image 7](7.png)
+
+
+## 5th random search
 Fixed parameters: 
 -	tournamentSize = 380;  
 -	crossoverMethod = "twoPoint";  
@@ -230,6 +252,8 @@ Random parameters:
 -	Maxmutation rate range random – 0.20 – 0.30 
 -	Mutate change population random range  0.37 – 0.52 
 -	Max gene random range 0.05 – 0.01 
+
+![Image 8](8.png)
 
 After data analysis, the following ranges deliver average Fitness on test: 0.0226 to 0.0608: 
 -	maxGene (0.03 – 0.04) 
@@ -258,3 +282,7 @@ minMutationRate 	0.001
 maxMutationRate 	0.23
 maxDiversity 	300
 
+# Future Work
+There are numerous ways to enhance an algorithm's performance. For instance, you can modify the existing algorithm, improve the hill-climbing operator's implementation, or introduce new operators and fine-tune the existing ones. Additionally, it is possible to incorporate adaptability parameters for operators other than mutation. 
+Parameter tuning can also be optimized. In the current approach, there are gaps in parameter exploration, such as an insufficient examination of the number of hidden nodes. Also, minimum and maximum gene values can be explored individually, rather than using a uniform range. The initial grid search may have been conducted too early, leading to limited exploration of parameter ranges. 
+Expanding random search and utilizing broader parameter ranges can help discover more effective combinations, especially when time and computing resources are not constraints. Furthermore, implementing Bayesian optimization can significantly improve the overall results, as this approach is known to yield superior outcomes compared to other optimization techniques. 
