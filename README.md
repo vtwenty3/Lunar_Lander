@@ -2,7 +2,7 @@
 
 # Intro
 
-An evolutionary algorithm that utilizes a combination of random and grid search for parameter tuning, with several new functions and parameters added to enhance its performance.
+The algorithm integrates an adaptive mutation rate, two crossover methods, and multiple activation and initialization functions, which are tunable as hyperparameters. This design creates a large search space that can be explored using techniques such as random and grid search. Each search cycle generates a dataset which can be analyzed with tools like R-Studio, ggplot2 and OpenRefine to uncover valuable insights, patterns and relationships. The implemented strategy sheds light on the algorithm's dynamics and performance, resulting in an EA that achieves excellent fitness values.	
 
 # New Features
 
